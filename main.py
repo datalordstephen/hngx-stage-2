@@ -27,23 +27,38 @@ def add_person(payload: Person, db: db_dependency):
     db_person = models.Person(name = payload.name)
     db.add(db_person)
     db.commit()
+    return {"id": db_person.id, "name": db_person.name}
 
 @app.get("/api/{id}")
 def get_person(id: int, db: db_dependency):
     res = db.query(models.Person).filter(models.Person.id == id).first()
     if not res:
         raise HTTPException(status_code=404, detail="Person not found")
+    
     return res
 
 @app.put("/api/{id}")
 def update_person(id: int, db: db_dependency, payload: Person):
+    res = db.query(models.Person).filter(models.Person.id == id).first()
+    if res is None:
+        raise HTTPException(status_code=404, detail="Person not found")
+    
     db.query(models.Person).filter(models.Person.id == id).update({"name": payload.name}, synchronize_session=False)
     db.commit()
+    db.refresh(res)
     raise HTTPException(status_code=200, detail="Person updated")
+
+    return
     
 
 @app.delete("/api/{id}")
 def delete_person(id: int, db: db_dependency):
+    res = db.query(models.Person).filter(models.Person.id == id).first()
+    if res is None:
+        raise HTTPException(status_code=404, detail="Person not found")
+    
     db.query(models.Person).filter(models.Person.id == id).delete(synchronize_session=False)
     db.commit()
     raise HTTPException(status_code=204, detail="Person deleted")
+
+    return 
