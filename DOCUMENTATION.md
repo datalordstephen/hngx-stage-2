@@ -1,6 +1,13 @@
 # CRUD REST API DOCUMENTATION
 This document provides detailed information about the **`CRUD`** (Create, Read, Update, Delete) **REST API**, which is designed to manage resources through *HTTP* requests. The **API** allows users to perform **`CRUD`** operations on a specific *resource*, and it follows the principles of **RESTful** architecture.
 
+### Table of Content
+1. [API Endpoints](#api-endpoints)
+2. [Sample Usage](#sample-usage)
+3. [Limitations / Assumptions](#limitationsassumptions)
+4. [Deploying](#deploying-api)
+5. [Contact Me](#contact)
+
 ## API ENDPOINTS
 ### Create (POST)
 * Creates a new `person` with a *unique* name
