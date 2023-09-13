@@ -22,11 +22,21 @@ This document provides detailed information about the **`CRUD`** (Create, Read, 
         "name": "Obaloluwa"
     }
     ```
-    • `400 Bad Request` if `name` aleady *exists* in the db or the `request` body is *invalid*:
+    • `400 Bad Request` if :
+
+    • `name` aleady *exists* in the *database*:
     
     ```json
     {
-        "detail": "Person already exists" | "detail": "Invalid request body"
+        "detail": "Person already exists"
+    }
+    ```
+
+    • `request` body is *invalid*:
+
+    ```json
+    {
+        "detail": "Invalid request body"
     }
     ```
 
