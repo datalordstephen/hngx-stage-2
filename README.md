@@ -43,5 +43,6 @@ The following steps are necessary to get the **API** up and running
     ```bash
     uvicorn main:app
     ```
+
 ### That's it!
-The server is now running locally and can receive requests.
+The server is now running locally at ```http://127.0.0.1:8000``` and can receive requests. Note that the database is hosted remotely, so an internet connection would be needed to successfully run queries.

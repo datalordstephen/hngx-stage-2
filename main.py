@@ -1,4 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
 from typing import Annotated
 from pydantic import BaseModel
 import models
@@ -22,11 +24,24 @@ def get_db():
         
 db_dependency = Annotated[Session, Depends(get_db)]
 
-@app.post("/api")
+# overwriting the default error message for validation errors on pydantic model
+@app.exception_handler(RequestValidationError)
+async def validator_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=400,
+        content={"detail": "Invalid request body"}
+    )
+
+@app.post("/api", status_code=201)
 def add_person(payload: Person, db: db_dependency):
+    res = db.query(models.PersonClass).filter(models.PersonClass.name == payload.name).first()
+    if res is not None:
+        raise HTTPException(status_code=400, detail="Person already exists")
+    
     db_person = models.PersonClass(name = payload.name)
     db.add(db_person)
     db.commit()
+    
     return {"id": db_person.id, "name": db_person.name}
 
 @app.get("/api/{id}")
@@ -50,12 +65,11 @@ def update_person(id: int, db: db_dependency, payload: Person | None = None):
     db.query(models.PersonClass).filter(models.PersonClass.id == id).update({"name": payload.name}, synchronize_session=False)
     db.commit()
     db.refresh(res)
-    raise HTTPException(status_code=200, detail="Person updated")
 
-    return
+    return {"id": id, "name": payload.name}
     
 
-@app.delete("/api/{id}")
+@app.delete("/api/{id}", status_code=204)
 def delete_person(id: int, db: db_dependency, payload: Person | None = None):
     is_payload_none = payload is None
     if is_payload_none:
@@ -72,6 +86,3 @@ def delete_person(id: int, db: db_dependency, payload: Person | None = None):
         db.query(models.PersonClass).filter(models.PersonClass.name == payload.name).delete(synchronize_session=False)
         
     db.commit()
-    raise HTTPException(status_code=204, detail="Person deleted")
-
-    return 
